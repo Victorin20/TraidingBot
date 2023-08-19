@@ -1,11 +1,9 @@
 import MetaTrader5 as mt5
 
-
 mt5.initialize()
 
-
 startPrice = 1.08600
-bet = 16
+multiplier = 16
 points = 0.0025
 
 path = "C:/Users/victo/Downloads/file.txt"
@@ -70,7 +68,7 @@ def cancel_SellLimit_order():
 
     cancel_order(order_to_remove.ticket)
 
-def buyLimit(bet, position, volume):
+def buyLimit(position, volume):
     symbol = "EURUSD"  # EUR/USD currency pair
     order_type = mt5.ORDER_TYPE_BUY_LIMIT       # Replace with the desired volume/lot size
     price = startPrice - position * points     # Set the price for the Buy Limit order
@@ -92,7 +90,7 @@ def buyLimit(bet, position, volume):
     else:
         print("Buy Limit order placed successfully. Order ticket:", result.order)
 
-def sellStop(bet, position, volume):
+def sellStop(position, volume):
     symbol = "EURUSD"  # Replace with the desired symbol
     order_type = mt5.ORDER_TYPE_SELL_STOP
     price = startPrice - position * points
@@ -115,7 +113,7 @@ def sellStop(bet, position, volume):
     else:
         print("Sell Stop order placed successfully. Order ticket:", result.order)
 
-def sellLimit(bet, position, volume):
+def sellLimit(position, volume):
     symbol = "EURUSD"  # Replace with the desired symbol
     order_type = mt5.ORDER_TYPE_SELL_LIMIT
     price = startPrice - position * points
@@ -138,12 +136,8 @@ def sellLimit(bet, position, volume):
     else:
         print("Sell Stop order placed successfully. Order ticket:", result.order)
 
-
-
 #print(mt5.symbol_info_tick(symbol).ask)
     
-sellStop(bet, 0, 0.06)
-buyLimit(bet*2, 1, 0.13)
 
 first_active = True
 second_active = False
@@ -160,11 +154,12 @@ fifth = False
 sixth = False
 seventh = False
 
+sellStop(0, 0.06*multiplier)
+buyLimit(1, 0.13*multiplier)
 
 while failed == False and succes == False:
 
-    last_tick = mt5.symbol_info_tick(symbol)
-    last_price = last_tick.ask
+    last_price = mt5.symbol_info_tick(symbol).ask
 
     if(first_active and last_price >= startPrice + points):
         failed = True
@@ -219,25 +214,21 @@ while failed == False and succes == False:
     if(failed == False):
 
         if(last_price <= startPrice - points and third == False and second_active):    
-            sellLimit(bet*4, 0, 0.26)
+            sellLimit(0, 0.26*multiplier)
             third = True
 
         if(last_price >= startPrice and fourd == False and third_active):
-            sellStop(bet*8, 1, 0.5)
+            sellStop(1, 0.5*multiplier)
             fourd = True
         
         if(last_price <= startPrice - points and fifth == False and fourd_active):
-            sellStop(bet*16, 2, 1)
+            sellStop(2, 1*multiplier)
             fifth = True
         
         if(last_price <= startPrice - points * 2 and sixth == False and fifth_active):
-            sellStop(bet*32, 3, 2.5)
+            sellStop(3, 2.5*multiplier)
             sixth = True
 
-        if(last_price <= startPrice - points * 3 and seventh == False and sixth_active):
-            sellStop(bet*64, 4, 4.1)
-            seventh = True
-       
 if(failed):
     failures+=1
 
@@ -246,7 +237,7 @@ with open(path, 'w') as file:
     file.write(failures)
 
 if(succes):
-    print("Succes you win " + bet*64)
+    print("Succes you win ")
 else : 
     print("Failed")
 
