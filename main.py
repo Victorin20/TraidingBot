@@ -159,84 +159,80 @@ seventh = False
 
 while failed == False and succes == False:
 
-    last_tick = mt5.symbol_info_tick(symbol) 
+    last_tick = mt5.symbol_info_tick(symbol)
+    last_price = last_tick.ask
 
-    if(first_active and last_tick.ask >= startPrice + points):
+    if(first_active and last_price >= startPrice + points):
         failed = True
         cancel_buyLimit_order()
 
-    if(first_active and last_tick.ask <= startPrice - points):
+    if(first_active and last_price <= startPrice - points):
         first_active = False
         second_active = True
 
-    if(second_active and last_tick.ask <= startPrice - points*2):
+    if(second_active and last_price <= startPrice - points*2):
         failed = True
         cancel_SellLimit_order()
 
-    if(second_active and last_tick.ask >= startPrice):
+    if(second_active and last_price >= startPrice):
         second_active = False
         third_active = True
 
-    if(third_active and last_tick.ask >= startPrice + points):
+    if(third_active and last_price >= startPrice + points):
         failed = True
         cancel_SellStop_order()
     
-    if(third_active and last_tick.ask <= startPrice - points):
+    if(third_active and last_price <= startPrice - points):
         third_active = False
         fourd_active = True
     
-    if(fourd_active and last_tick.ask >= startPrice):
+    if(fourd_active and last_price >= startPrice):
         failed = True
         cancel_SellStop_order
 
-    if(fourd_active and last_tick.ask <= startPrice - points*2):
+    if(fourd_active and last_price <= startPrice - points*2):
         fourd_active = False
         fifth_active = True
 
-    if(fifth_active and last_tick.ask >= startPrice - points):
+    if(fifth_active and last_price >= startPrice - points):
         failed = True
         cancel_SellStop_order
 
 
-    if(fifth_active and last_tick.ask <= startPrice - points*3):
+    if(fifth_active and last_price <= startPrice - points*3):
         fifth_active = False
         sixth_active = True
     
-    if(sixth_active and last_tick.ask >= startPrice - points*2):
+    if(sixth_active and last_price >= startPrice - points*2):
         failed = True
         cancel_SellStop_order()
 
-    if(sixth_active and last_tick.ask <= startPrice - points*4):
+    if(sixth_active and last_price <= startPrice - points*4):
         sixth_active = False
-        seventh_active = True
-
-    if(seventh_active and last_tick.ask >= startPrice - points*3):
-        failed = True
-        cancel_SellStop_order()
-
-    if(seventh_active and last_tick.ask <= startPrice - points*5):
-        seventh_active = False
         succes = True
+
+
+    
 
     if(failed == False):
 
-        if(last_tick.ask <= startPrice - points and third == False and second_active):    
+        if(last_price <= startPrice - points and third == False and second_active):    
             sellLimit(bet*4, 0)
             third = True
 
-        if(last_tick.ask >= startPrice and fourd == False and third_active):
+        if(last_price >= startPrice and fourd == False and third_active):
             sellStop(bet*8, 1)
             fourd = True
         
-        if(last_tick.ask <= startPrice - points and fifth == False and fourd_active):
+        if(last_price <= startPrice - points and fifth == False and fourd_active):
             sellStop(bet*16, 2)
             fifth = True
         
-        if(last_tick.ask <= startPrice - points * 2 and sixth == False and fifth_active):
+        if(last_price <= startPrice - points * 2 and sixth == False and fifth_active):
             sellStop(bet*32, 3)
             sixth = True
 
-        if(last_tick.ask <= startPrice - points * 3 and seventh == False and sixth_active):
+        if(last_price <= startPrice - points * 3 and seventh == False and sixth_active):
             sellStop(bet*64, 4)
             seventh = True
        
