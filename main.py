@@ -8,12 +8,18 @@ startPrice = 1.08600
 bet = 16
 points = 0.0025
 
+path = "C:/Users/victo/Downloads/file.txt"
 
 # Select the desired symbol
 symbol = "EURUSD"
 
 failed = False
 succes = False
+
+f = open(path, "r")
+failures = f.read()
+failures = int(failures)
+f.close()
 
 
 # Request the last tick for the symbol
@@ -64,7 +70,6 @@ def cancel_SellLimit_order():
 
     cancel_order(order_to_remove.ticket)
 
-
 def buyLimit(bet, position, volume):
     symbol = "EURUSD"  # EUR/USD currency pair
     order_type = mt5.ORDER_TYPE_BUY_LIMIT       # Replace with the desired volume/lot size
@@ -86,7 +91,6 @@ def buyLimit(bet, position, volume):
         print("Order placement failed. Error code:", result.retcode)
     else:
         print("Buy Limit order placed successfully. Order ticket:", result.order)
-
 
 def sellStop(bet, position, volume):
     symbol = "EURUSD"  # Replace with the desired symbol
@@ -212,30 +216,34 @@ while failed == False and succes == False:
         succes = True
 
 
-    
-
     if(failed == False):
 
         if(last_price <= startPrice - points and third == False and second_active):    
-            sellLimit(bet*4, 0)
+            sellLimit(bet*4, 0, 0.26)
             third = True
 
         if(last_price >= startPrice and fourd == False and third_active):
-            sellStop(bet*8, 1)
+            sellStop(bet*8, 1, 0.5)
             fourd = True
         
         if(last_price <= startPrice - points and fifth == False and fourd_active):
-            sellStop(bet*16, 2)
+            sellStop(bet*16, 2, 1)
             fifth = True
         
         if(last_price <= startPrice - points * 2 and sixth == False and fifth_active):
-            sellStop(bet*32, 3)
+            sellStop(bet*32, 3, 2.5)
             sixth = True
 
         if(last_price <= startPrice - points * 3 and seventh == False and sixth_active):
-            sellStop(bet*64, 4)
+            sellStop(bet*64, 4, 4.1)
             seventh = True
        
+if(failed):
+    failures+=1
+
+with open(path, 'w') as file:
+    failures = str(failures)
+    file.write(failures)
 
 if(succes):
     print("Succes you win " + bet*64)
