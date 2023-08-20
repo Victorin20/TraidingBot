@@ -3,10 +3,10 @@ import MetaTrader5 as mt5
 mt5.initialize()
 
 startPrice = 1.08600
-multiplier = 16
+volume = 0.06
 points = 0.0025
 
-path = "C:/Users/victo/Downloads/file.txt"
+path = "C:/Users/victo/Downloads/file1.txt"
 
 # Select the desired symbol
 symbol = "EURUSD"
@@ -21,7 +21,7 @@ f.close()
 
 
 # Request the last tick for the symbol
-last_tick = mt5.symbol_info_tick(symbol)
+last_tick = mt5.symbol_info_tick(symbol).ask
 
 
 def cancel_order(order_number):
@@ -138,7 +138,6 @@ def sellLimit(position, volume):
 
 #print(mt5.symbol_info_tick(symbol).ask)
     
-
 first_active = True
 second_active = False
 third_active = False
@@ -154,8 +153,8 @@ fifth = False
 sixth = False
 seventh = False
 
-sellStop(0, 0.06*multiplier)
-buyLimit(1, 0.13*multiplier)
+sellStop(0, volume)
+buyLimit(1, volume*2)
 
 while failed == False and succes == False:
 
@@ -187,7 +186,7 @@ while failed == False and succes == False:
     
     if(fourd_active and last_price >= startPrice):
         failed = True
-        cancel_SellStop_order
+        cancel_SellStop_order()
 
     if(fourd_active and last_price <= startPrice - points*2):
         fourd_active = False
@@ -195,8 +194,7 @@ while failed == False and succes == False:
 
     if(fifth_active and last_price >= startPrice - points):
         failed = True
-        cancel_SellStop_order
-
+        cancel_SellStop_order()
 
     if(fifth_active and last_price <= startPrice - points*3):
         fifth_active = False
@@ -214,19 +212,19 @@ while failed == False and succes == False:
     if(failed == False):
 
         if(last_price <= startPrice - points and third == False and second_active):    
-            sellLimit(0, 0.26*multiplier)
+            sellLimit(0, volume*4)
             third = True
 
         if(last_price >= startPrice and fourd == False and third_active):
-            sellStop(1, 0.5*multiplier)
+            sellStop(1, volume*8)
             fourd = True
         
         if(last_price <= startPrice - points and fifth == False and fourd_active):
-            sellStop(2, 1*multiplier)
+            sellStop(2, volume*16)
             fifth = True
         
         if(last_price <= startPrice - points * 2 and sixth == False and fifth_active):
-            sellStop(3, 2.5*multiplier)
+            sellStop(3, volume*32)
             sixth = True
 
 if(failed):
